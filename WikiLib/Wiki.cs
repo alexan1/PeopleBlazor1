@@ -9,12 +9,12 @@ namespace WikiLib
 {
     public static class Wiki
     {
-        public async static Task<Collection<WikiPerson>> WikiSearch(string name)
+        public async static Task<Collection<WikiPerson>> WikiSearch(string searchString)
         {
             var urlBase = "https://query.wikidata.org/sparql";
             var query = "SELECT distinct (SAMPLE(?image)as ?image) ?item ?itemLabel ?itemDescription" +
                 " (SAMPLE(?DR) as ?DR)(SAMPLE(?RIP) as ?RIP)(SAMPLE(?article) as ?article) " +
-                "WHERE {?item wdt:P31 wd:Q5. ?item ?label '" + name + "'@en. OPTIONAL{?item wdt:P569 ?DR .}" +
+                "WHERE {?item wdt:P31 wd:Q5. ?item ?label '" + searchString + "'@en. OPTIONAL{?item wdt:P569 ?DR .}" +
                 " ?article schema:about ?item . ?article schema:inLanguage 'en'. ?article schema:isPartOf <https://en.wikipedia.org/>. " +
                 "OPTIONAL{?item wdt:P570 ?RIP .} " +
                 "OPTIONAL{?item wdt:P18 ?image .} " +
@@ -25,68 +25,77 @@ namespace WikiLib
             client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36");
             var json = await client.GetStringAsync(url);
             var doc = JsonDocument.Parse(json);
-            //var names = doc.RootElement.EnumerateObject().Select(p => p.Name);
+            var root = doc.RootElement;
+            var entities = root.GetProperty("results").GetProperty("bindings");
 
-            
+            var FoundPersons = new Collection<WikiPerson>();
+                      
+            var count = entities.Count();
 
-            //var entities = results["results"]["bindings"];
-            //var count = entities.Count();
-            //var FoundPersons = new Collection<WikiPerson>();
-            /*
-            foreach (JToken item in entities)
+           
+            foreach (var item in entities.EnumerateArray())
             {
 
-                int item1;
-                item1 = int.TryParse(item["item"]["value"].ToString().Substring(32), out item1) ? item1 : 0;
-                var itemname = item["itemLabel"]["value"].ToString();
-
-                var description1 = String.Empty;
-                var description = item["itemDescription"];
-                if (description != null)
+                int id = 0;
+                if (item.TryGetProperty("item", out JsonElement itemId))
                 {
-                    description1 = description["value"].ToString();
+                    int.TryParse(itemId.GetProperty("value").ToString().Substring(32), out id);
+                }
+                                
+
+                var name = String.Empty;
+                if (item.TryGetProperty("itemLabel", out JsonElement itemLabel))
+                {
+                    name = itemLabel.GetProperty("value").ToString();
+                }
+                
+                var description = String.Empty;
+                if (item.TryGetProperty("itemDescription", out JsonElement itemDescription))
+                {
+                    name = itemDescription.GetProperty("value").ToString();
                 }
 
-                DateTime birthday1 = DateTime.MinValue;
-                DateTime? birthday2 = null;
-                var birthday = item["DR"];
-                if (birthday != null)
+                DateTime birthday = DateTime.MinValue;
+                if (item.TryGetProperty("DR", out JsonElement DR))
                 {
-                    birthday2 = DateTime.TryParse(birthday["value"].ToString(), out birthday1) ? birthday1 : birthday2;
+                    DateTime.TryParse(DR.GetProperty("value").ToString(), out birthday);                    
                 }
 
-                DateTime death1 = DateTime.MinValue;
-                DateTime? death2 = null;
-                var death = item["RIP"];
-                if (death != null)
+
+                DateTime death = DateTime.MinValue;
+                if (item.TryGetProperty("RIP", out JsonElement RIP))
                 {
-                    death2 = DateTime.TryParse(death["value"].ToString(), out death1) ? death1 : death2;
+                    DateTime.TryParse(RIP.GetProperty("value").ToString(), out death);
+                }
+                
+                var image = string.Empty;
+                if (item.TryGetProperty("image", out JsonElement imageE))
+                {
+                    image = imageE.GetProperty("value").ToString();
                 }
 
-                var image1 = string.Empty;
-                var image = item["image"];
-                if (image != null)
+                var link = String.Empty;
+                if (item.TryGetProperty("article", out JsonElement article))
                 {
-                    image1 = image["value"].ToString();
+                    link = article.GetProperty("value").ToString();
                 }
-
-                var link = item["article"]["value"].ToString();
-                //var rating = 10;
+                                
 
                 var person = new WikiPerson
                 {
-                    Id = item1,
-                    Name = itemname,
-                    Description = description1,
-                    Birthday = birthday2,
-                    Death = death2,
-                    Image = image1,
+                    Id = id,
+                    Name = name,
+                    Description = description,
+                    Birthday = birthday,
+                    Death = death,
+                    Image = image,
                     Link = link,
                     //Rating = rating
                 };
                 FoundPersons.Add(person);
+                
             }
-            */
+
 
             return FoundPersons;
         }
