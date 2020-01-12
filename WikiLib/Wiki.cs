@@ -30,7 +30,7 @@ namespace WikiLib
 
             var FoundPersons = new Collection<WikiPerson>();
                       
-            var count = entities.Count();
+            //var count = entities.Count();
 
            
             foreach (var item in entities.EnumerateArray())
