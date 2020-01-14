@@ -108,7 +108,7 @@ namespace WikiLib
             var json = await client.GetStringAsync(url);
             var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
-            var item = root.GetProperty("results").GetProperty("bindings");
+            var item = root.GetProperty("results").GetProperty("bindings")[0];
 
             var name = String.Empty;
             if (item.TryGetProperty("itemLabel", out JsonElement itemLabel))
