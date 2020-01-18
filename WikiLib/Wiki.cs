@@ -33,59 +33,7 @@ namespace WikiLib
            
             foreach (var item in entities.EnumerateArray())
             {
-                int id = 0;
-                if (item.TryGetProperty("item", out JsonElement itemId))
-                {
-                    int.TryParse(itemId.GetProperty("value").ToString().Substring(32), out id);
-                }                                
-
-                var name = String.Empty;
-                if (item.TryGetProperty("itemLabel", out JsonElement itemLabel))
-                {
-                    name = itemLabel.GetProperty("value").ToString();
-                }
-                
-                var description = String.Empty;
-                if (item.TryGetProperty("itemDescription", out JsonElement itemDescription))
-                {
-                    description = itemDescription.GetProperty("value").ToString();
-                }
-
-                DateTime birthday = DateTime.MinValue;
-                if (item.TryGetProperty("DR", out JsonElement DR))
-                {
-                    DateTime.TryParse(DR.GetProperty("value").ToString(), out birthday);                    
-                }
-
-                DateTime death = DateTime.MinValue;
-                if (item.TryGetProperty("RIP", out JsonElement RIP))
-                {
-                    DateTime.TryParse(RIP.GetProperty("value").ToString(), out death);
-                }
-                
-                var image = string.Empty;
-                if (item.TryGetProperty("image", out JsonElement imageE))
-                {
-                    image = imageE.GetProperty("value").ToString();
-                }
-
-                var link = String.Empty;
-                if (item.TryGetProperty("article", out JsonElement article))
-                {
-                    link = article.GetProperty("value").ToString();
-                }                                
-
-                var person = new WikiPerson
-                {
-                    Id = id,
-                    Name = name,
-                    Description = description,
-                    Birthday = birthday,
-                    Death = death,
-                    Image = image,
-                    Link = link,
-                    //Rating = rating
-                };
+                var person = GetPersonFromJsonElement(item);
                 FoundPersons.Add(person);                
             }
             return FoundPersons;
@@ -94,9 +42,10 @@ namespace WikiLib
         public async static Task<WikiPerson> GetWikiPerson(int id)
         {
             var urlBase = "https://query.wikidata.org/sparql";
-            var query = "SELECT DISTINCT  ?item ?itemLabel ?itemDescription (SAMPLE(?DR) AS ?DRSample) (SAMPLE(?article) AS ?articleSample)" +
+            var query = "SELECT distinct (SAMPLE(?image)as ?image)  ?item ?itemLabel ?itemDescription" +
+            " (SAMPLE(?DR) as ?DR)(SAMPLE(?RIP) as ?RIP)(SAMPLE(?article) as ?article) " +
             "WHERE{ ?article  schema:about ?item ; schema:inLanguage  'en' ; schema:isPartOf    <https://en.wikipedia.org/>" +
-            "FILTER ( ?item = <http://www.wikidata.org/entity/Q937> )" +
+            "FILTER ( ?item = <http://www.wikidata.org/entity/Q" + id +"> )" +
             "OPTIONAL { ?item  wdt:P569  ?DR }" +
             "OPTIONAL { ?item  wdt:P570  ?RIP }" +
             "OPTIONAL { ?item  wdt:P18  ?image }" +
@@ -109,6 +58,19 @@ namespace WikiLib
             var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
             var item = root.GetProperty("results").GetProperty("bindings")[0];
+
+            var person = GetPersonFromJsonElement(item);
+
+            return person;
+        }
+
+        private static WikiPerson GetPersonFromJsonElement(JsonElement item)
+        {
+            int id = 0;
+            if (item.TryGetProperty("item", out JsonElement itemId))
+            {
+                int.TryParse(itemId.GetProperty("value").ToString().Substring(32), out id);
+            }
 
             var name = String.Empty;
             if (item.TryGetProperty("itemLabel", out JsonElement itemLabel))
@@ -145,6 +107,7 @@ namespace WikiLib
             {
                 link = article.GetProperty("value").ToString();
             }
+
 
             var person = new WikiPerson
             {
