@@ -1,6 +1,36 @@
 ﻿@page "/search"
+@using PeopleBlazor1.Components
 
 <h3>Find person in Wiki</h3>
 
-<input id="search" />
+<input id="search" @name />
+<input @bind="SearchName" />
+
+@if (People == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Id</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in People)
+            {
+                <tr>
+                    <td>                        
+                    <PersonShort Person = "person"/>
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 

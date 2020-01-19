@@ -1,11 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using WikiLib;
 
 namespace PeopleBlazor1.Pages
 {
     public partial class Search
     {
+        string SearchName;
+
+        Collection<WikiPerson> People => Wiki.WikiSearch(SearchName).Result;
+
+        protected override async Task OnInitializedAsync()
+        {
+
+        }
     }
 }

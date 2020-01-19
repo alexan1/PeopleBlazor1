@@ -19,6 +19,8 @@ namespace WikiTest
             var person = Wiki.GetWikiPerson(303).Result;
 
             Assert.IsNotNull(person);
+
+            Assert.AreEqual("Elvis Presley", person.Name);
         }
     }
 }
