@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace PeopleBlazor1.Pages
 {
-    public partial class Index
+    public partial class Index : ComponentBase
     {
         [Inject]
         private HttpClient Http { get; set; }
