@@ -3,8 +3,7 @@
 
 <h3>Find person in Wiki</h3>
 
-<input id="search" @name />
-<input @bind="SearchName" />
+<input @bind="SearchName" @onkeypress="SearchPeople"/>
 
 @*@if (People == null)
 {
