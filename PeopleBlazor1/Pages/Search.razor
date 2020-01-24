@@ -2,13 +2,10 @@
 
 <h3>Find person in Wiki</h3>
 
-<input @bind="SearchName" @onkeypress="SearchPeople"/>
+<input @bind="SearchName" @onchange ="SearchPeople" />
 
-@*@if (People == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
+
+@if (People != null)
 {
     <table class="table">
         <thead>
@@ -21,14 +18,14 @@ else
             @foreach (var person in People)
             {
                 <tr>
-                    <td>                        
-                    <PersonShort Person = "person"/>
+                    <td>
+                        <PersonShort Person="person" />
                     </td>
-                    
+
                 </tr>
             }
         </tbody>
     </table>
-}*@
+}
 
 

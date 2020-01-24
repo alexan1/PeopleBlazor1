@@ -8,7 +8,10 @@ namespace PeopleBlazor1.Pages
     public partial class Search : ComponentBase
     {
         string SearchName;
-        
+
+        public Collection<WikiPerson> People { get; set; }  
+
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -17,7 +20,7 @@ namespace PeopleBlazor1.Pages
 
         private void SearchPeople()
         {
-            Collection<WikiPerson> People = Wiki.WikiSearch(SearchName).Result;
+            People = Wiki.WikiSearch(SearchName).Result;
         }
     }
 }
