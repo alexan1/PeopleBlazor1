@@ -9,7 +9,7 @@ namespace PeopleBlazor1.Pages
     {
         string SearchName;
 
-        public Collection<WikiPerson> People { get; set; }  
+        private Collection<WikiPerson> People { get; set; }
 
 
 
@@ -18,9 +18,11 @@ namespace PeopleBlazor1.Pages
 
         }
 
-        private void SearchPeople()
+        private async void SearchPeople()
         {
-            People = Wiki.WikiSearch(SearchName).Result;
+            //var name = e.Value.ToString();
+            People = await Wiki.WikiSearch(SearchName);
+
         }
     }
 }
