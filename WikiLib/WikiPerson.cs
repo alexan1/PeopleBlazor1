@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-//using Microsoft.AspNetCore.Components;
-//using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace WikiLib

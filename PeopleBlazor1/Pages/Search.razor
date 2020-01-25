@@ -7,34 +7,12 @@
 
 
 @if (@People != null)
-    
-{
-    <table class="table">        
-        <tbody>
-            <thead>
-                <tr>
-                    <th>People.Count = @People.Count() </th>                    
-                </tr>
-                <tr>
-                    <th>People.Count = @People.ToString() </th>
-                </tr>
-            </thead>
+
+
 
             @foreach (var person in People)
             {
-                <tr>
-                    <td>
-                        Person = @person.Name
-                    </td>                    
-                </tr>
-                <tr>
-                    <td>
-                        <PersonShort Person=@person />
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                <PersonShort Person=@person />
+            }         
 
 
